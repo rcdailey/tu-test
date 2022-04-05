@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Make Release
+
+on:
+  push:
+    tags:
+      - v*
+
+env:
+  dotnetVersion: "6.0.x"
+
+jobs:
+  release:
+    name: Release
+    needs: [build, smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: publish
+
+      - name: Create Zip Files
+        shell: pwsh
+        run: ci/CreateZip.ps1 publish
+
+      - name: Extract Changelog
+        id: changelog
+        uses: ffurrer2/extract-release-notes@v1
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          files: publish-zip/trash-*.zip
+          body: ${{ steps.changelog.outputs.release_notes }}
+          tag_name: ${{ github.event.create.ref }}
+          draft: false
