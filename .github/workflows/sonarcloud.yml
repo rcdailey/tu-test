@@ -3,16 +3,29 @@ name: Sonarcloud
 
 on:
   push:
-    paths-ignore:
-      - "wiki/**"
-      - "**.md"
+  pull_request:
 
 env:
   dotnetVersion: "6.0.x"
 
 jobs:
+  precheck:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          concurrent_skipping: never
+          cancel_others: true
+          skip_after_successful_duplicate: true
+          paths_ignore: '["wiki/**", "**.md"]'
+
   sonarcloud:
     name: SonarCloud
+    needs: precheck
+    if: ${{ needs.precheck.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
     env:
       DOTNET_ROLL_FORWARD: LatestMajor
