@@ -18,9 +18,6 @@ jobs:
         uses: fkirc/skip-duplicate-actions@master
         with:
           paths: '["**.md", "!src/**"]'
-          concurrent_skipping: never
-          skip_after_successful_duplicate: true
-          cancel_others: true
 
   markdownlint:
     name: Markdown Lint
