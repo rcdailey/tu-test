@@ -3,16 +3,29 @@ name: Markdown Lint
 
 on:
   push:
-    paths:
-      - "**.md"
-      - "!src/**"
+  pull_request:
 
 env:
   dotnetVersion: "6.0.x"
 
 jobs:
+  precheck:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          concurrent_skipping: same_content
+          skip_after_successful_duplicate: true
+          cancel_others: true
+          paths: '["**.md", "!src/**"]'
+
   markdownlint:
     name: Markdown Lint
+    needs: precheck
+    if: ${{ needs.precheck.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
