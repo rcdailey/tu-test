@@ -58,8 +58,8 @@ public static class CompositionRoot
 
         // note: Do not allow consumers to resolve IServiceConfiguration directly; if this gets cached
         // they end up using the wrong configuration when multiple instances are used.
-        // builder.Register(c => c.Resolve<IConfigurationProvider>().ActiveConfiguration)
-        // .As<IServiceConfiguration>();
+        //
+        //     builder.Register(c => c.Resolve<IConfigurationProvider>().ActiveConfiguration).As<IServiceConfiguration>();
     }
 
     private static void CommandRegistrations(ContainerBuilder builder)
