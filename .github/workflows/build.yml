@@ -145,8 +145,9 @@ jobs:
     needs:
       - build-win
       - build-linux
-      - codesign # Depends on build-osx
-      - docker # Only for preventing a release if docker build & publish fails
+      - build-osx
+      # - codesign # Depends on build-osx
+      # - docker # Only for preventing a release if docker build & publish fails
     env:
       XZ_OPT: "-T0 -9"
     steps:
